@@ -7,7 +7,7 @@ class Bliftax
     attr_reader :input_labels, :output_label
     attr_accessor :implicants
 
-    # Initalizes this gate with the labels for inputs and output.
+    # Initializes this gate with the labels for inputs and output.
     #
     # @param labels [Array] the label names for the inputs and output. The
     #   last element in the Array is the output label.

@@ -87,10 +87,10 @@ class Bliftax
         fail 'Two operands must have equal size for *-operator'
       end
       unless bits_valid?(@inputs.map(&:bit))
-        fail 'Bad bit in LHS operand of sharp operator'
+        fail 'Bad bit in LHS operand of star operator'
       end
       unless bits_valid?(rhs.inputs.map(&:bit))
-        fail 'Bad bit in RHS operand of sharp operator'
+        fail 'Bad bit in RHS operand of star operator'
       end
 
       result_bits = []
@@ -121,7 +121,7 @@ class Bliftax
     # where
     #
     # * C = A if A_i # B_i = NULL for some i
-    # * C = NULL if A_i # B_i = EPLISON for all i
+    # * C = NULL if A_i # B_i = EPSILON for all i
     # * Otherwise, C = union of A_i = B_i' (negated) if A_i = x and B_i != x
     #
     # @param rhs [Implicant] the right hand side of the operation
@@ -211,7 +211,7 @@ class Bliftax
       format '%s %s', @inputs.map(&:bit).join, @output.bit
     end
 
-    # Creates a new NULl Implicant.
+    # Creates a new NULL Implicant.
     #
     # @return [Implicant] a null Implicant
     def self.make_null

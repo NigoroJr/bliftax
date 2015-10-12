@@ -6,7 +6,7 @@ require 'bliftax/version'
 class Bliftax
   attr_accessor :name, :inputs, :outputs, :latches, :clocks, :gates
 
-  # Decl's for BLIF
+  # Declarations for BLIF
   MODEL = '.model'
   INPUTS = '.inputs'
   OUTPUTS = '.outputs'
@@ -17,7 +17,7 @@ class Bliftax
 
   # One space
   SPACE = ' '
-  # Empty strng
+  # Empty string
   EMPTY = ''
 
   # Initializes the object.
