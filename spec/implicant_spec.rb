@@ -60,7 +60,7 @@ describe Bliftax::Implicant do
 
     it 'parses all the implicants' do
       model = blif.parse(implicant_operator_equals)
-      expect(model.gates.first.size).to eq 4
+      expect(model.gates.first.implicants.size).to eq 4
     end
   end
 
@@ -72,13 +72,14 @@ describe Bliftax::Implicant do
     end
 
     context 'using star operator' do
-      let(:labels) { ['a', 'b', 'c', 'd', 'out'] }
+      let(:input_labels) { ('a'..'d').to_a }
+      let(:output_label) { 'out' }
       let!(:model) { blif.parse(implicant_operator_star) }
       let!(:gate) { model.gates.first }
 
       it 'processes at-least-one-NULL case' do
-        correct_result = Bliftax::Implicant.new(labels, '0-11 1')
-        expect(gate[0].star(gate[1])).to eq correct_result
+        correct = Bliftax::Implicant.new(input_labels, output_label, '0-11 1')
+        expect(gate[0].star(gate[1])).to eq correct
       end
 
       it 'processes case resulting in NULL' do
@@ -86,13 +87,14 @@ describe Bliftax::Implicant do
       end
 
       it 'processes case where no NULL is involved' do
-        correct_result = Bliftax::Implicant.new(labels, '0111 1')
-        expect(gate[0].star(gate[3])).to eq correct_result
+        correct = Bliftax::Implicant.new(input_labels, output_label, '0111 1')
+        expect(gate[0].star(gate[3])).to eq correct
       end
     end
 
     context 'using sharp operator' do
-      let(:labels) { ['a', 'b', 'c', 'd', 'e', 'out'] }
+      let(:input_labels) { ('a'..'e').to_a }
+      let(:output_label) { 'out' }
       let!(:model) { blif.parse(implicant_operator_sharp) }
       let!(:gate) { model.gates.first }
 
@@ -108,9 +110,9 @@ describe Bliftax::Implicant do
 
       it 'results in multiple implicants' do
         correct_results = Set.new([
-          Bliftax::Implicant.new(labels, '01-0- 1'),
-          Bliftax::Implicant.new(labels, '-110- 1'),
-          Bliftax::Implicant.new(labels, '-1-00 1')
+          Bliftax::Implicant.new(input_labels, output_label, '01-0- 1'),
+          Bliftax::Implicant.new(input_labels, output_label, '-110- 1'),
+          Bliftax::Implicant.new(input_labels, output_label, '-1-00 1')
         ])
         results = gate[4].sharp(gate[5])
         expect(results).to eq correct_results
@@ -119,9 +121,10 @@ describe Bliftax::Implicant do
   end
 
   context 'checking coverage' do
-    let(:labels) { ('a'..'e').to_a << 'out' }
-    let(:a) { Bliftax::Implicant.new(labels, '0--01 1') }
-    let(:b) { Bliftax::Implicant.new(labels, '0-101 1') }
+    let(:input_labels) { ('a'..'e').to_a }
+    let(:output_label) { 'out' }
+    let(:a) { Bliftax::Implicant.new(input_labels, output_label, '0--01 1') }
+    let(:b) { Bliftax::Implicant.new(input_labels, output_label, '0-101 1') }
 
     it 'knows when it covers another Implicant' do
       expect(a.covers?(b)).to eq true

@@ -53,22 +53,21 @@ class Bliftax
 
     attr_reader :inputs, :output
 
-    def initialize(labels, str, is_null = false)
-      (*input_labels, output_label) = labels
-      (input_bits, output_bit) = in_out_bits(str, labels.size == 1)
+    def initialize(input_labels, output_label, str, is_null = false)
+      @is_null = is_null
 
-      if input_labels.size != input_bits.size
-        fail 'Labels and bits size do not match'
-      end
+      return if str.empty?
+
+      (input_bits, output_bit) = parse_bits(str)
+
+      fail 'Input bit size mismatch' if input_labels.size != input_bits.size
 
       @inputs = []
-      input_labels.each_with_index do |l, i|
-        @inputs << Bit.new(l, input_bits.at(i), Bit::INPUT)
+      input_labels.each_with_index do |label, i|
+        @inputs << Bit.new(label, input_bits.at(i), Bit::INPUT)
       end
 
       @output = Bit.new(output_label, output_bit, Bit::OUTPUT)
-
-      @is_null = is_null
     end
 
     # The Star-operator.
@@ -87,8 +86,11 @@ class Bliftax
       unless @inputs.size == rhs.inputs.size
         fail 'Two operands must have equal size for *-operator'
       end
-      unless bits_ok(@inputs.map(&:bit)) && bits_ok(rhs.inputs.map(&:bit))
-        fail 'Bad bit in operand of star operator'
+      unless bits_valid?(@inputs.map(&:bit))
+        fail 'Bad bit in LHS operand of sharp operator'
+      end
+      unless bits_valid?(rhs.inputs.map(&:bit))
+        fail 'Bad bit in RHS operand of sharp operator'
       end
 
       result_bits = []
@@ -103,7 +105,10 @@ class Bliftax
       end
 
       # Construct a Implicant instance
-      Implicant.new(labels, bit_str(result_bits), result_is_null)
+      Implicant.new(@inputs.map(&:label),
+                    @output.label,
+                    bit_str(result_bits),
+                    result_is_null)
     end
     alias_method :*, :star
 
@@ -119,14 +124,18 @@ class Bliftax
     # * C = NULL if A_i # B_i = EPLISON for all i
     # * Otherwise, C = union of A_i = B_i' (negated) if A_i = x and B_i != x
     #
-    # Returns a Set of Implicant. Note that the set size could be 1.
+    # @param rhs [Implicant] the right hand side of the operation
+    #
+    # @return [Set<Implicant>] Note that the set size could be 1.
     def sharp(rhs)
-      # Sanity check
       unless @inputs.size == rhs.inputs.size
-        fail 'Two operands must have equal size for #-operator'
+        fail 'Two operands must have equal size for sharp operator'
       end
-      unless bits_ok(@inputs.map(&:bit)) && bits_ok(rhs.inputs.map(&:bit))
-        fail 'Bad bit in operand of sharp operator'
+      unless bits_valid?(@inputs.map(&:bit))
+        fail 'Bad bit in LHS operand of sharp operator'
+      end
+      unless bits_valid?(rhs.inputs.map(&:bit))
+        fail 'Bad bit in RHS operand of sharp operator'
       end
 
       result_bits = []
@@ -138,8 +147,7 @@ class Bliftax
       result_is_null ||= result_bits.all? { |bit| bit == Bit::EPSILON }
 
       # Don't bother going further
-      str = bit_str(result_bits)
-      return Set.new([Implicant.new(labels, str, true)]) if result_is_null
+      return Set.new([Implicant.make_null]) if result_is_null
 
       # Set of Implicant to return
       result_set = Set.new
@@ -149,7 +157,9 @@ class Bliftax
         if a.bit == Bit::DC && b.bit != Bit::DC
           copy = @inputs.map(&:bit)
           copy[i] = b.bit == Bit::ON ? Bit::OFF : Bit::ON
-          result_set.add(Implicant.new(labels, bit_str(copy)))
+          in_labels = @inputs.map(&:label)
+          result = Implicant.new(in_labels, @output.label, bit_str(copy))
+          result_set.add(result)
         end
       end
 
@@ -201,22 +211,29 @@ class Bliftax
       format '%s %s', @inputs.map(&:bit).join, @output.bit
     end
 
-    # Returns an Array of String that has labels for this Implicant
-    def labels
-      labels = @inputs.map(&:label)
-      labels << @output.label
-      labels
+    # Creates a new NULl Implicant.
+    #
+    # @return [Implicant] a null Implicant
+    def self.make_null
+      Implicant.new([], Bliftax::EMPTY, Bliftax::EMPTY, true)
     end
 
     private
 
     # Parses the bit string and returns the bits for inputs and outputs.
     #
-    # Examples
+    # @param str [String] the string representation of the input and output
+    #   bits. Input and output bits must be separated by a whitespace.
     #
-    #   in_out_bits('010 1', false)
-    #   # => [['0', '1', '0'], 1]
-    def in_out_bits(str, is_single)
+    # @return [Array] contains exactly two elements, the first being the input
+    #   bits in String and the second being the output bit in String.
+    #
+    # @example Parse a String representation of bits.
+    #   parse_bits('010 1')
+    #   # => [['0', '1', '0'], '1']
+    def parse_bits(str)
+      is_single = str.split(' ').size == 1
+
       # Constant gate (likely vcc or gnd)
       if is_single
         input_bits = []
@@ -231,8 +248,10 @@ class Bliftax
     end
 
     # Checks whether all the bits are either 1, 0, or DC.
-    def bits_ok(port)
-      port.all? do |bit|
+    #
+    # @param bits [Array<String>]
+    def bits_valid?(bits)
+      bits.all? do |bit|
         [Bit::ON, Bit::OFF, Bit::DC].any? { |b| bit == b }
       end
     end
@@ -241,7 +260,7 @@ class Bliftax
     # This method assumes that the bits given are input bits, so it appends a
     # 1 as the output.
     def bit_str(bits)
-      format '%s 1', bits.join('')
+      format '%s 1', bits.join
     end
   end
 end
