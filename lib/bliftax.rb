@@ -1,5 +1,6 @@
-require 'bliftax/version'
+require 'bliftax/gate'
 require 'bliftax/implicant'
+require 'bliftax/version'
 
 # A class that parses a BLIF file.
 class Bliftax
@@ -21,7 +22,7 @@ class Bliftax
 
   # Initializes the object.
   #
-  # str: String for a filename or text to parse (optional)
+  # @param str [String] filename or text to parse
   def initialize(str = nil)
     @latches = []
     @clocks = []
@@ -32,7 +33,9 @@ class Bliftax
 
   # Parses a BLIF file.
   #
-  # str: String for a filename or text to parse (optional)
+  # @param str [String] filename or the text to parse.
+  #
+  # @return [Bliftax] the parsed BLIF file.
   def parse(str)
     fh = File.exist?(str) ? File.open(str) : StringIO.new(str)
     lines = read_continuous_lines(fh)
@@ -48,7 +51,7 @@ class Bliftax
       when OUTPUTS
         @outputs = following
       when NAMES
-        @gates << parse_names(following, lines, i + 1)
+        @gates << parse_gate(following, lines, i + 1)
       when LATCH
         @latches << following
       when CLOCK
@@ -65,26 +68,32 @@ class Bliftax
     self
   end
 
-  # Parse the truth table creating an Implicant for each term (e.g. "001 1").
-  def parse_names(labels, lines, i)
-    implicants = []
+  # Parse one gate from the input.
+  #
+  # @param labels [Array<String>] labels of the inputs and output.
+  # @param lines [Array<String>] all the lines in the current BLIF file.
+  # @param i [Integer] index of in lines to start from.
+  #
+  # @return [Gate] the gate that was parsed.
+  def parse_gate(labels, lines, i)
+    gate = Gate.new(labels)
 
     loop do
       # If no truth table exists, then that's all 0
-      if lines[i].start_with?('.')
-        implicants << Implicant.new(labels, Implicant::Bit::OFF)
-      else
-        implicants << Implicant.new(labels, lines[i])
-      end
+      bit_str = lines[i].start_with?('.') ? Implicant::Bit::OFF : lines[i]
+      gate.add_implicant(bit_str)
 
       i += 1
 
       break if lines[i].nil? || lines[i].empty? || lines[i].start_with?('.')
     end
 
-    implicants
+    gate
   end
 
+  # Returns a string representation of this gate in BLIF format.
+  #
+  # @return [String] this gate in BLIF format
   def to_blif
     in_labels = @inputs.join(SPACE)
     out_labels = @outputs.join(SPACE)
@@ -94,11 +103,8 @@ class Bliftax
 .outputs #{out_labels}
     EOF
 
-    @gates.each do |g|
-      str << format('.names %s', g.first.labels.join(SPACE)) << "\n"
-      g.each do |implicant|
-        str << implicant.to_blif << "\n"
-      end
+    @gates.each do |gate|
+      str << gate.to_blif
     end
 
     @latches.each do |l|
@@ -112,6 +118,9 @@ class Bliftax
     str << ".end\n"
   end
 
+  # Duplicates this object.
+  #
+  # @return the deep copy of this object.
   def dup
     copy = Bliftax.new
     copy.name = @name.dup
@@ -129,9 +138,11 @@ class Bliftax
   # logical line (removing comments and joining lines that end with
   # backslash with the next line).
   #
-  # fh: File handle
+  # @param fh [IO] File handle
   #
-  # Returns an Array of logical lines.
+  # @return [Array] each element being the logical lines with comments and
+  #   backslashes removed. Lines ending with a backslash gets joined with the
+  #   next line.
   def read_continuous_lines(fh)
     # Read in the entire BLIF file into an array so that
     # we can "peek" into the future.
@@ -160,10 +171,20 @@ class Bliftax
     lines
   end
 
+  # Removes the trailing comments from a string.
+  #
+  # @param str [String] the original string
+  #
+  # @return [String] string with the trailing whitespace and comments removed
   def strip_comments(str)
-    str.sub(/\s*\#.*$/, EMPTY)
+    str.sub(/\s*\#.*$/, EMPTY).strip
   end
 
+  # Removes the trailing backslash from a string.
+  #
+  # @param str [String] the original string
+  #
+  # @return [String] string with the trailing backslash removed
   def strip_trailing_backslash(str)
     str.sub(/\\/, EMPTY)
   end
