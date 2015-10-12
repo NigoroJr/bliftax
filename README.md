@@ -33,6 +33,7 @@ Following is the list of main features of this gem:
 * sharp operators
 * coverage check (b is covered by a)
 * finding minterms that an implicant covers
+* finding the cost of an implicant
 
 Here is an example usage of this gem.
 

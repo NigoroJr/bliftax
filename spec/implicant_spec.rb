@@ -160,4 +160,24 @@ describe Bliftax::Implicant do
       expect(b.minterms).to eq Set.new([1, 5, 9, 13])
     end
   end
+
+  context 'find cost of an implicant' do
+    let(:input_labels) { ('a'..'e').to_a }
+    let(:output_label) { 'out' }
+    let(:a) { Bliftax::Implicant.new(input_labels, output_label, '01101 1') }
+    let(:b) { Bliftax::Implicant.new(input_labels, output_label, '0--01 1') }
+    let(:c) { Bliftax::Implicant.new(input_labels, output_label, '----- 1') }
+
+    it 'finds that the cost is however many bits it has' do
+      expect(a.cost).to eq 5
+    end
+
+    it 'incorporates some DC' do
+      expect(b.cost).to eq 3
+    end
+
+    it 'find that the cost is zero' do
+      expect(c.cost).to eq 0
+    end
+  end
 end

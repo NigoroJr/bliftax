@@ -192,6 +192,16 @@ class Bliftax
       set
     end
 
+    # Returns the cost of this implicant.
+    # A cost refers to the size of the cube, meaning how many don't-cares this
+    # implicant has. For example, an implicant '1-00' has a cost of 3, whereas
+    # '1--0' has a cost of 2.
+    #
+    # @return [Integer] the cost of this implicant.
+    def cost
+      @inputs.size - @inputs.map(&:bit).count(Bit::DC)
+    end
+
     # Checks if this implicant covers the given implicant.
     # Implicant a covers b if all bit combinations that b can describe can
     # also be described by a.
