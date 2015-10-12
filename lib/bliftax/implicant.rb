@@ -166,9 +166,16 @@ class Bliftax
       result_set
     end
 
-    # Checks if this Implicant covers the given Implicant
+    # Checks if this implicant covers the given implicant.
+    # Implicant a covers b if all bit combinations that b can describe can
+    # also be described by a.
+    #
+    # @param other [Implicant] the implicant to be compared against.
+    #
+    # @return [true, false] true if this covers the given implicant, false
+    #   otherwise.
     def covers?(other)
-      fail 'Argument must be a Implicant' unless other.is_a?(Implicant)
+      fail 'Argument must be an Implicant' unless other.is_a?(Implicant)
 
       @inputs.zip(other.inputs).each do |a, b|
         return false unless a.bit == b.bit || a.bit == Bit::DC
@@ -181,20 +188,24 @@ class Bliftax
       @is_null
     end
 
-    # Checks if the implicants are equal
+    # Checks for equality.
+    #
+    # @param other [Object] whatever to compare against
     def ==(other)
       @inputs == other.inputs && @output == other.output
     end
+    alias_method :eql?, :==
 
-    def eql?(other)
-      self == other
-    end
-
+    # Returns the hash value of this instance.
+    #
+    # @return [Integer] the hash value of this instance.
     def hash
       [@inputs, @output].hash
     end
 
-    # String-ify this implicant
+    # Return the string version of this implicant.
+    #
+    # @return [String] string representation of this implicant.
     def to_s
       str = ''
       str << "INPUTS:\n" unless @inputs.empty?
@@ -205,8 +216,10 @@ class Bliftax
       str
     end
 
-    # Returns the String representation of this Implicant.
-    # Used when outputting in BLIF.
+    # Returns the string representation of this implicant.
+    #
+    # @return [String] the string representation of this implicant in BLIF
+    #   format.
     def to_blif
       format '%s %s', @inputs.map(&:bit).join, @output.bit
     end
@@ -250,15 +263,20 @@ class Bliftax
     # Checks whether all the bits are either 1, 0, or DC.
     #
     # @param bits [Array<String>]
+    #
+    # @return [true, false] true if all the bits are 1, 0, or DC.
     def bits_valid?(bits)
       bits.all? do |bit|
         [Bit::ON, Bit::OFF, Bit::DC].any? { |b| bit == b }
       end
     end
 
-    # Given an Array of bits, return the BLIF-style bit string.
-    # This method assumes that the bits given are input bits, so it appends a
-    # 1 as the output.
+    # Returns the BLIF-style representation of this implicant.
+    # This method assumes that the output bit is 1 because BLIF only states
+    # combinations that result in output of 1.
+    #
+    # @return [String] representation of the bits in this implicant. The
+    #   output bit is separated from the input bits by one space.
     def bit_str(bits)
       format '%s 1', bits.join
     end
