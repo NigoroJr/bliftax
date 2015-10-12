@@ -16,15 +16,42 @@ partially naming this gem.
 
 ## Usage
 
+This gem currently only supports the following declarations for BLIF:
+
+```
+.model
+.inputs
+.outputs
+.names
+.latch
+.clock
+```
+
+Following is the list of main features of this gem:
+
+* star operators
+* sharp operators
+* coverage check (b is covered by a)
+
+Here is an example usage of this gem.
+
 ```ruby
 require 'bliftax'
 
 model = Bliftax.new('path/to/blif_file')
-model.inputs
-model.outputs
-model.latches
-model.clocks
-model.implicants
+model.gates.each do |gate|
+  next if gate.implicants.size < 2
+
+  starred = gate[0] * gate[1]
+  sharped = gate[0].sharp(gate[1])
+end
+
+model.gates.each do |gate|
+  gate.implicants.combination(2).each do |a, b|
+    c = a * b
+    covered = c.covers?(a)
+  end
+end
 ```
 
 ## Development
