@@ -134,4 +134,19 @@ describe Bliftax::Implicant do
       expect(b.covers?(a)).to eq false
     end
   end
+
+  context 'finding minterms' do
+    let(:input_labels) { ('a'..'e').to_a }
+    let(:output_label) { 'out' }
+    let(:a) { Bliftax::Implicant.new(input_labels, output_label, '01101 1') }
+    let(:b) { Bliftax::Implicant.new(input_labels, output_label, '0--01 1') }
+
+    it 'finds exactly one minterm for terms that do not have DC' do
+      expect(a.minterms).to eq Set.new([13])
+    end
+
+    it 'finds multiple minterms' do
+      expect(b.minterms).to eq Set.new([1, 5, 9, 13])
+    end
+  end
 end

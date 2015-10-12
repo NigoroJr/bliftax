@@ -32,6 +32,7 @@ Following is the list of main features of this gem:
 * star operators
 * sharp operators
 * coverage check (b is covered by a)
+* finding minterms that an implicant covers
 
 Here is an example usage of this gem.
 

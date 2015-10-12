@@ -166,6 +166,32 @@ class Bliftax
       result_set
     end
 
+    # Finds the possible minterms that this implicant can represent.
+    # For example, a bit string of 101 can only represent m_5, but 10- can
+    # represent m_4 and m_5.
+    #
+    # @return [Set<Integer>] a set of minterms.
+    def minterms
+      set = Set.new
+
+      bits = @inputs.map(&:bit)
+      num_dc = bits.count(Bit::DC)
+      str = bits.join
+      # There are 2**num_dc combinations
+      (2**num_dc).times do |i|
+        str_copy = str.dup
+
+        # Convert to binary form and pad with 0
+        cnt_str = i.to_s(2).rjust(num_dc, '0')
+        cnt_str.split('').each do |b|
+          str_copy = str_copy.sub(Bit::DC, b)
+        end
+        set.add(str_copy.to_i(2))
+      end
+
+      set
+    end
+
     # Checks if this implicant covers the given implicant.
     # Implicant a covers b if all bit combinations that b can describe can
     # also be described by a.
