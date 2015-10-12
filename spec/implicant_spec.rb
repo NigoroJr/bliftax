@@ -49,6 +49,9 @@ describe Bliftax::Implicant do
 # Add some more test cases
 -1-0- 1   # 4: Base (for getting multiple results)
 110-1 1   # 5: Results in three implicants
+# And some more...
+001-1 1   # 6: Base
+00-1- 1   # 7: Only one output
     EOF
   end
 
@@ -106,6 +109,14 @@ describe Bliftax::Implicant do
       it 'results in NULL because it has one NULL' do
         results = gate[0].sharp(gate[3])
         expect(results.to_a.all? { |r| r.null? }).to eq true
+      end
+
+      it 'results in one implicant' do
+        results = gate[6].sharp(gate[7])
+        correct_results = Set.new([
+          Bliftax::Implicant.new(input_labels, output_label, '00101 1')
+        ])
+        expect(results).to eq correct_results
       end
 
       it 'results in multiple implicants' do
