@@ -44,8 +44,8 @@ describe Bliftax::Implicant do
 .names a b c d e out
 1-100 1   # 0: Base (compare against this)
 -010- 1   # 1: All epsilon but one
-0-000 1   # 2: All epsilon hence NULL
--011- 1   # 3: Has one NULL hence ends up NULL
+1-100 1   # 2: All epsilon hence NULL
+-011- 1   # 3: Has one NULL hence returns A
 # Add some more test cases
 -1-0- 1   # 4: Base (for getting multiple results)
 110-1 1   # 5: Results in three implicants
@@ -103,12 +103,12 @@ describe Bliftax::Implicant do
 
       it 'results in NULL because all epsilon' do
         results = gate[0].sharp(gate[2])
-        expect(results.to_a.all? { |r| r.null? }).to eq true
+        expect(results.all? { |r| r.null? }).to eq true
       end
 
-      it 'results in NULL because it has one NULL' do
+      it 'results in A because it has one NULL' do
         results = gate[0].sharp(gate[3])
-        expect(results.to_a.all? { |r| r.null? }).to eq true
+        expect(results).to eq Set.new([gate[0]])
       end
 
       it 'results in one implicant' do

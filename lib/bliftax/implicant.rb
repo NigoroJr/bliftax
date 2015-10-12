@@ -143,10 +143,11 @@ class Bliftax
         result_bits << SHARP_TABLE[a.bit][b.bit]
       end
 
-      result_is_null = result_bits.any? { |bit| bit == Bit::NULL }
-      result_is_null ||= result_bits.all? { |bit| bit == Bit::EPSILON }
+      # C = A if A_i # B_i = NULL for some i
+      return Set.new([self]) if result_bits.any? { |bit| bit == Bit::NULL }
 
-      # Don't bother going further
+      # C = NULL if A_i # B_i = EPSILON for all i
+      result_is_null = result_bits.all? { |bit| bit == Bit::EPSILON }
       return Set.new([Implicant.make_null]) if result_is_null
 
       # Set of Implicant to return
