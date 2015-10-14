@@ -242,15 +242,38 @@ class Bliftax
 
     # Return the string version of this implicant.
     #
+    # @param show [:input, :output, :labels, Array<:input, :output, :labels>]
+    #   what to show. If Array is used, corresponding information is appended.
+    #
     # @return [String] string representation of this implicant.
-    def to_s
-      str = ''
-      str << "INPUTS:\n" unless @inputs.empty?
-      @inputs.each do |bit|
-        str << format("%s\n", bit)
+    def to_s(show = [:input])
+      show = [show] unless show.is_a?(Array)
+
+      tokens = []
+
+      if show.include?(:labels)
+        # Only show the labels
+        if show == [:labels]
+          return [@inputs.map(&:label), @output.label].join(Bliftax::SPACE)
+        end
+
+        if show.include?(:input)
+          tokens << 'INPUTS'
+          @inputs.each do |b|
+            tokens << format('%-8s %s', b.label, b.bit)
+          end
+        end
+        if show.include?(:output)
+          tokens << 'OUTPUT'
+          tokens << format('%-8s %s', @output.label, @output.bit)
+        end
+
+        return tokens.join("\n") + "\n"
       end
-      str << @output.to_s
-      str
+
+      tokens << @inputs.map(&:bit).join if show.include?(:input)
+      tokens << @output.bit if show.include?(:output)
+      tokens.join(Bliftax::SPACE)
     end
 
     # Returns the string representation of this implicant.
