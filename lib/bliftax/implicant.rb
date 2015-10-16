@@ -4,18 +4,20 @@ require 'bliftax/implicant/bit'
 class Bliftax
   # A class that represents an implicant of a gate.
   class Implicant
-    # Look-up tables for the star and sharp operators
-    # +---+---+---+---+
-    # |A/B| 0 | 1 | - |
-    # +---+---+---+---+
-    # | 0 |   |   |   |
-    # +---+---+---+---+
-    # | 1 |   |   |   |
-    # +---+---+---+---+
-    # | - |   |   |   |
-    # +---+---+---+---+
+    # Look-up tables for the star operator.
     #
-    # Use it like: STAR_TABLE[a.bit][b.bit]
+    # @example
+    #   +---+---+---+---+
+    #   |A/B| 0 | 1 | - |
+    #   +---+---+---+---+
+    #   | 0 | 0 | N | 0 |
+    #   +---+---+---+---+
+    #   | 1 | N | 1 | 1 |
+    #   +---+---+---+---+
+    #   | - | 0 | 1 | - |
+    #   +---+---+---+---+
+    #
+    #   bit_result = STAR_TABLE[a.bit][b.bit]
     STAR_TABLE = {
       Bit::OFF => {
         Bit::OFF => Bit::OFF,
@@ -33,6 +35,21 @@ class Bliftax
         Bit::DC  => Bit::DC
       }
     }
+
+    # Look-up tables for the sharp operator.
+    #
+    # @example
+    #   +---+---+---+---+
+    #   |A/B| 0 | 1 | - |
+    #   +---+---+---+---+
+    #   | 0 | E | N | E |
+    #   +---+---+---+---+
+    #   | 1 | N | E | E |
+    #   +---+---+---+---+
+    #   | - | 1 | 0 | E |
+    #   +---+---+---+---+
+    #
+    #   bit_result = SHARP_TABLE[a.bit][b.bit]
     SHARP_TABLE = {
       Bit::OFF => {
         Bit::OFF => Bit::EPSILON,

@@ -6,18 +6,17 @@ require 'bliftax/version'
 class Bliftax
   attr_accessor :name, :inputs, :outputs, :latches, :clocks, :gates
 
-  # Declarations for BLIF
-  MODEL = '.model'
-  INPUTS = '.inputs'
-  OUTPUTS = '.outputs'
-  NAMES = '.names'
-  LATCH = '.latch'
-  CLOCK = '.clock'
-  END_MODEL = '.end'
+  DECL_MODEL = '.model'
+  DECL_INPUTS = '.inputs'
+  DECL_OUTPUTS = '.outputs'
+  DECL_NAMES = '.names'
+  DECL_LATCH = '.latch'
+  DECL_CLOCK = '.clock'
+  DECL_END = '.end'
 
-  # One space
+  # One space for readability.
   SPACE = ' '
-  # Empty string
+  # Empty string for readability.
   EMPTY = ''
 
   # Initializes the object.
@@ -44,19 +43,19 @@ class Bliftax
       (decl, *following) = line.split(SPACE)
 
       case decl
-      when MODEL
+      when DECL_MODEL
         @name = following.first
-      when INPUTS
+      when DECL_INPUTS
         @inputs = following
-      when OUTPUTS
+      when DECL_OUTPUTS
         @outputs = following
-      when NAMES
+      when DECL_NAMES
         @gates << parse_gate(following, lines, i + 1)
-      when LATCH
+      when DECL_LATCH
         @latches << following
-      when CLOCK
+      when DECL_CLOCK
         @clocks << following
-      when END_MODEL
+      when DECL_END
         break
       when /^[^\.]/
         next

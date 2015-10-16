@@ -11,8 +11,7 @@ partially naming this gem.
 
 ## Installation
 
-    $ bundle install
-    $ rake install
+    $ gem install bliftax
 
 ## Usage
 
@@ -25,6 +24,7 @@ This gem currently only supports the following declarations for BLIF:
 .names
 .latch
 .clock
+.end
 ```
 
 Following is the list of main features of this gem:
