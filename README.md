@@ -29,6 +29,10 @@ This gem currently only supports the following declarations for BLIF:
 
 Following is the list of main features of this gem:
 
+* 2-level logic optimization
+    - getting the prime implicants
+    - getting the essential prime implicants
+    - using branch heuristic
 * star operators
 * sharp operators
 * coverage check (b is covered by a)
@@ -36,6 +40,28 @@ Following is the list of main features of this gem:
 * finding the cost of an implicant
 
 Here is an example usage of this gem.
+
+```ruby
+#!/usr/bin/env ruby
+
+require 'bliftax'
+
+abort "Usage: #{$PROGRAM_NAME} <blif file>" if ARGV.empty?
+
+BLIF_FILE = ARGV.first
+
+model = Bliftax.new(BLIF_FILE)
+output = model.dup
+
+model.gates.each_with_index do |gate, i|
+  final_cover = Bliftax::Optimizer.optimize(gate)
+  output.gates[i].implicants = final_cover.to_a
+end
+
+puts output.to_blif
+```
+
+Some other ways you can use this gem.
 
 ```ruby
 require 'bliftax'

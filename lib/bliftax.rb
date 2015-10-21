@@ -1,5 +1,6 @@
 require 'bliftax/gate'
 require 'bliftax/implicant'
+require 'bliftax/optimizer'
 require 'bliftax/version'
 
 # A class that parses a BLIF file.
