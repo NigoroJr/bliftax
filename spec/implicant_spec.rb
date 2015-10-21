@@ -81,7 +81,7 @@ describe Bliftax::Implicant do
       let!(:gate) { model.gates.first }
 
       it 'processes at-least-one-NULL case' do
-        correct = Bliftax::Implicant.new(input_labels, output_label, '0-11 1')
+        correct = Bliftax::Implicant.make_dummy('0-11')
         expect(gate[0].star(gate[1])).to eq correct
       end
 
@@ -90,14 +90,12 @@ describe Bliftax::Implicant do
       end
 
       it 'processes case where no NULL is involved' do
-        correct = Bliftax::Implicant.new(input_labels, output_label, '0111 1')
+        correct = Bliftax::Implicant.make_dummy('0111')
         expect(gate[0].star(gate[3])).to eq correct
       end
     end
 
     context 'using sharp operator' do
-      let(:input_labels) { ('a'..'e').to_a }
-      let(:output_label) { 'out' }
       let!(:model) { blif.parse(implicant_operator_sharp) }
       let!(:gate) { model.gates.first }
 
@@ -114,16 +112,16 @@ describe Bliftax::Implicant do
       it 'results in one implicant' do
         results = gate[6].sharp(gate[7])
         correct_results = Set.new([
-          Bliftax::Implicant.new(input_labels, output_label, '00101 1')
+          Bliftax::Implicant.make_dummy('00101')
         ])
         expect(results).to eq correct_results
       end
 
       it 'results in multiple implicants' do
         correct_results = Set.new([
-          Bliftax::Implicant.new(input_labels, output_label, '01-0- 1'),
-          Bliftax::Implicant.new(input_labels, output_label, '-110- 1'),
-          Bliftax::Implicant.new(input_labels, output_label, '-1-00 1')
+          Bliftax::Implicant.make_dummy('01-0-'),
+          Bliftax::Implicant.make_dummy('-110-'),
+          Bliftax::Implicant.make_dummy('-1-00')
         ])
         results = gate[4].sharp(gate[5])
         expect(results).to eq correct_results
@@ -132,10 +130,8 @@ describe Bliftax::Implicant do
   end
 
   context 'checking coverage' do
-    let(:input_labels) { ('a'..'e').to_a }
-    let(:output_label) { 'out' }
-    let(:a) { Bliftax::Implicant.new(input_labels, output_label, '0--01 1') }
-    let(:b) { Bliftax::Implicant.new(input_labels, output_label, '0-101 1') }
+    let(:a) { Bliftax::Implicant.make_dummy('0--01') }
+    let(:b) { Bliftax::Implicant.make_dummy('0-101') }
 
     it 'knows when it covers another Implicant' do
       expect(a.covers?(b)).to eq true
@@ -147,10 +143,8 @@ describe Bliftax::Implicant do
   end
 
   context 'finding minterms' do
-    let(:input_labels) { ('a'..'e').to_a }
-    let(:output_label) { 'out' }
-    let(:a) { Bliftax::Implicant.new(input_labels, output_label, '01101 1') }
-    let(:b) { Bliftax::Implicant.new(input_labels, output_label, '0--01 1') }
+    let(:a) { Bliftax::Implicant.make_dummy('01101') }
+    let(:b) { Bliftax::Implicant.make_dummy('0--01') }
 
     it 'finds exactly one minterm for terms that do not have DC' do
       expect(a.minterms).to eq Set.new([13])
@@ -162,11 +156,9 @@ describe Bliftax::Implicant do
   end
 
   context 'find cost of an implicant' do
-    let(:input_labels) { ('a'..'e').to_a }
-    let(:output_label) { 'out' }
-    let(:a) { Bliftax::Implicant.new(input_labels, output_label, '01101 1') }
-    let(:b) { Bliftax::Implicant.new(input_labels, output_label, '0--01 1') }
-    let(:c) { Bliftax::Implicant.new(input_labels, output_label, '----- 1') }
+    let(:a) { Bliftax::Implicant.make_dummy('01101') }
+    let(:b) { Bliftax::Implicant.make_dummy('0--01') }
+    let(:c) { Bliftax::Implicant.make_dummy('-----') }
 
     it 'finds that the cost is however many bits it has' do
       expect(a.cost).to eq 5
