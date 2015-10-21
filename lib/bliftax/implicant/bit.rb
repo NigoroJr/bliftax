@@ -38,6 +38,15 @@ class Bliftax
       end
       alias_method :eql?, :==
 
+      # Checks for inequality.
+      #
+      # @param other [Object] whatever to compare against.
+      #
+      # @return [true, false] true if two bits are not equal, false otherwise.
+      def !=(other)
+        @bit != other.bit || @type != other.type
+      end
+
       # Returns the hash value of this instance.
       #
       # @return [Integer] the hash value of this instance.
