@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Naoki Mizuno"]
   spec.email         = ["nigorojr@gmail.com"]
 
-  spec.summary       = 'A library that parses BLIF files and do logic optimization'
+  spec.summary       = 'A library that parses BLIF files and does logic optimization'
   spec.homepage      = 'https://github.com/NigoroJr/bliftax'
   spec.license       = "MIT"
 
