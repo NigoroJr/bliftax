@@ -1,5 +1,7 @@
 # Bliftax
 
+[![Build Status](https://travis-ci.org/NigoroJr/bliftax.svg)](https://travis-ci.org/NigoroJr/bliftax)
+
 This is a simple library that parses a
 [BLIF](https://www.ece.cmu.edu/~ee760/760docs/blif.pdf) file and does
 operations used in logic optimization algorithms described in Chapter 4.10.2
