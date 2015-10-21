@@ -24,6 +24,8 @@ class Bliftax
     #   being the output bit. For example, '010 1' represents the three inputs
     #   being 0, 1, 0 and the output being 1 in this case. If an Array is
     #   given, it will add all of the implicants.
+    #
+    # @return [Gate] the gate itself.
     def add_implicant(implicant)
       case implicant
       when Implicant
@@ -34,6 +36,7 @@ class Bliftax
         # Recursive call
         implicant.each { |i| add(i) }
       end
+      self
     end
     alias_method :<<, :add_implicant
 
