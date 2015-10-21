@@ -305,6 +305,23 @@ class Bliftax
       format '%s %s', @inputs.map(&:bit).join, @output.bit
     end
 
+    # Creates a dummy implicant with the given inputs.
+    # This is useful when checking if an implicant is equal to what is
+    # expected. The input labels are labeled from 'a' to 'z' then 'A' to 'Z',
+    # and the output label is 'out'.
+    #
+    # @param inputs [String, Array<String>] the input bits.
+    # @param output [String] the output bit.
+    #
+    # @return [Implicant] an implicant with dummy labels and the bits set to
+    #   the given bits.
+    def self.make_dummy(inputs, output = '1')
+      labels = ('a'..'z').to_a + ('A'..'Z').to_a
+      in_labels = labels.first(inputs.size)
+      input_str = inputs.is_a?(Array) ? inputs.join : inputs
+      Implicant.new(in_labels, 'out', format('%s %s', input_str, output))
+    end
+
     # Creates a new NULL Implicant.
     #
     # @return [Implicant] a null Implicant
