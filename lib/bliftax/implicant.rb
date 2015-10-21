@@ -98,6 +98,10 @@ class Bliftax
     # * C = NULL if A_i * B_i = NULL for more than one i
     # * Otherwise, C_i = A_i * B_i when A_i * B_i != NULL, and C_i = x (don't
     #   care) for the coordinate where A_i * B_i = NULL
+    #
+    # @param rhs [Implicant] the right hand side of the operation.
+    #
+    # @return [Implicant] the result of the star operation.
     def star(rhs)
       # Sanity check
       unless @inputs.size == rhs.inputs.size
@@ -141,7 +145,7 @@ class Bliftax
     # * C = NULL if A_i # B_i = EPSILON for all i
     # * Otherwise, C = union of A_i = B_i' (negated) if A_i = x and B_i != x
     #
-    # @param rhs [Implicant] the right hand side of the operation
+    # @param rhs [Implicant] the right hand side of the operation.
     #
     # @return [Set<Implicant>] Note that the set size could be 1.
     def sharp(rhs)
