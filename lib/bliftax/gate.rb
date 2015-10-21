@@ -55,7 +55,7 @@ class Bliftax
 
     # Returns a string representation of this gate in BLIF format.
     #
-    # @return [String] this gate in BLIF format
+    # @return [String] this gate in BLIF format.
     def to_blif
       str = format(".names %s %s\n",
                    @input_labels.join(SPACE),

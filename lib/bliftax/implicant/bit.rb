@@ -30,7 +30,9 @@ class Bliftax
 
       # Checks for equality.
       #
-      # @param other [Object] whatever to compare against
+      # @param other [Object] whatever to compare against.
+      #
+      # @return [true, false] true if two bits are equal, false otherwise.
       def ==(other)
         @bit == other.bit && @type == other.type
       end

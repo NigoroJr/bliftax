@@ -22,7 +22,7 @@ class Bliftax
 
   # Initializes the object.
   #
-  # @param str [String] filename or text to parse
+  # @param str [String] filename or text to parse.
   def initialize(str = nil)
     @latches = []
     @clocks = []
@@ -93,7 +93,7 @@ class Bliftax
 
   # Returns a string representation of this gate in BLIF format.
   #
-  # @return [String] this gate in BLIF format
+  # @return [String] this gate in BLIF format.
   def to_blif
     in_labels = @inputs.join(SPACE)
     out_labels = @outputs.join(SPACE)
@@ -120,7 +120,7 @@ class Bliftax
 
   # Duplicates this object.
   #
-  # @return the deep copy of this object.
+  # @return [Bliftax] the deep copy of this object.
   def dup
     copy = Bliftax.new
     copy.name = @name.dup
@@ -138,7 +138,7 @@ class Bliftax
   # logical line (removing comments and joining lines that end with
   # backslash with the next line).
   #
-  # @param fh [IO] File handle
+  # @param fh [IO] the file handle to read from.
   #
   # @return [Array] each element being the logical lines with comments and
   #   backslashes removed. Lines ending with a backslash gets joined with the
@@ -173,18 +173,18 @@ class Bliftax
 
   # Removes the trailing comments from a string.
   #
-  # @param str [String] the original string
+  # @param str [String] the original string.
   #
-  # @return [String] string with the trailing whitespace and comments removed
+  # @return [String] string with the trailing whitespace and comments removed.
   def strip_comments(str)
     str.sub(/\s*\#.*$/, EMPTY).strip
   end
 
   # Removes the trailing backslash from a string.
   #
-  # @param str [String] the original string
+  # @param str [String] the original string.
   #
-  # @return [String] string with the trailing backslash removed
+  # @return [String] string with the trailing backslash removed.
   def strip_trailing_backslash(str)
     str.sub(/\\/, EMPTY)
   end

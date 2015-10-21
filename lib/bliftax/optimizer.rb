@@ -5,7 +5,7 @@ class Bliftax
 
     # Does 2-level logic optimization to the given gate (a set of implicants).
     # This is done in the following steps (as described in the book
-    # Fundamentals of Digital Logic with Verilog Design.
+    # Fundamentals of Digital Logic with Verilog Design).
     #
     # 1. Find all prime implicants by using the star operator until the
     #    resulting set of implicants is the same as the previous round.
@@ -123,7 +123,7 @@ class Bliftax
     #
     # @param what [Implicant, #to_a<#cost>] the thing to be evaluated.
     #
-    # @return the evaluated cost
+    # @return the evaluated cost.
     def cost(what)
       return what.cost if what.is_a?(Bliftax::Implicant)
 
@@ -140,6 +140,9 @@ class Bliftax
     # @param to_cover [Set<Integer>] the set of minterms that need to be
     #   covered.
     # @param options [Set<Implicant>] the set of implicants to choose from.
+    #
+    # @return [Set<Implicant>] a set of implicants that has achieves the cover
+    #   in the minimum cost.
     def branching(to_cover, options)
       to_use = Set.new
       options.dup.each do |implicant|

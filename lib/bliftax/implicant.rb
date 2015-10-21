@@ -360,7 +360,7 @@ class Bliftax
 
     # Checks whether all the bits are either 1, 0, or DC.
     #
-    # @param bits [Array<String>]
+    # @param bits [Array<String>] the bits to be checked.
     #
     # @return [true, false] true if all the bits are 1, 0, or DC.
     def bits_valid?(bits)
